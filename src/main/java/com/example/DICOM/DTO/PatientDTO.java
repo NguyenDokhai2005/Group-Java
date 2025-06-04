@@ -1,5 +1,6 @@
 package com.example.DICOM.DTO;
 
+import com.example.DICOM.Enums.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -52,11 +53,11 @@ public class PatientDTO {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Enum getGender() {
-        return gender;
+    public Gender getGender() {
+        return (Gender) gender;
     }
 
-    public void setGender(Enum gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 

@@ -58,7 +58,7 @@ public class Patient {
         this.contactInfo = contactInfo;
     }
 
-    public Enum getGender() {
+    public Gender getGender() {
         return gender;
     }
 
