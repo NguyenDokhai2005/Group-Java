@@ -31,9 +31,6 @@ public class Patient {
     private Date createdAt;
 
 
-
-
-
     public Date getCreatedAt() {
         return createdAt;
     }

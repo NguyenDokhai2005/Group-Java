@@ -16,7 +16,7 @@ public class PatientDTO {
 
     private Date dateOfBirth;
 
-    private Enum gender;
+    private Gender gender;
 
     private String contactInfo;
 
