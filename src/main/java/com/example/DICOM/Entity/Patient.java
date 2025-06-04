@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 
+import com.example.DICOM.Enums.Gender;
+
 @Entity(name = "patient")
 public class Patient {
     @Id
@@ -17,7 +19,7 @@ public class Patient {
     private Date dateOfBirth;
 
     @Column(name = "gender")
-    private Enum gender;
+    private Gender gender;
 
     @Column (name= "contact_info")
     private String contactInfo;
@@ -60,7 +62,7 @@ public class Patient {
         return gender;
     }
 
-    public void setGender(Enum gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
