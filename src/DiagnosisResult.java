@@ -1,68 +1,36 @@
-package com.example.DICOM.Entity;
+package com.example.DICOM.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "diagnosis_results")
 public class DiagnosisResult {
-
     @Id
-    @Column(name = "result_id")
-    private Integer resultId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "img_id", nullable = false)
-    private Integer imgId;
-
-    @Column(name = "analyzed_by", nullable = false)
-    private Integer analyzedBy;
-
-    @Column(name = "diagnosis", columnDefinition = "TEXT")
+    private String patientId;
     private String diagnosis;
+    private String confidence;
 
-    @Column(name = "confidence_score", precision = 5, scale = 2)
-    private BigDecimal confidenceScore;
+    public DiagnosisResult() {
+    }
 
-    @Column(name = "analysis_date")
-    private LocalDateTime analysisDate;
-
-    // Constructors
-    public DiagnosisResult() {}
-
-    public DiagnosisResult(Integer resultId, Integer imgId, Integer analyzedBy, String diagnosis,
-                           BigDecimal confidenceScore, LocalDateTime analysisDate) {
-        this.resultId = resultId;
-        this.imgId = imgId;
-        this.analyzedBy = analyzedBy;
+    public DiagnosisResult(String patientId, String diagnosis, String confidence) {
+        this.patientId = patientId;
         this.diagnosis = diagnosis;
-        this.confidenceScore = confidenceScore;
-        this.analysisDate = analysisDate;
+        this.confidence = confidence;
     }
 
-    // Getters and Setters
-    public Integer getResultId() {
-        return resultId;
+    public Long getId() {
+        return id;
     }
 
-    public void setResultId(Integer resultId) {
-        this.resultId = resultId;
+    public String getPatientId() {
+        return patientId;
     }
 
-    public Integer getImgId() {
-        return imgId;
-    }
-
-    public void setImgId(Integer imgId) {
-        this.imgId = imgId;
-    }
-
-    public Integer getAnalyzedBy() {
-        return analyzedBy;
-    }
-
-    public void setAnalyzedBy(Integer analyzedBy) {
-        this.analyzedBy = analyzedBy;
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public String getDiagnosis() {
@@ -73,17 +41,14 @@ public class DiagnosisResult {
         this.diagnosis = diagnosis;
     }
 
-    public BigDecimal getConfidenceScore() {
-        return confidenceScore;
+    public String getConfidence() {
+        return confidence;
     }
 
-    public void setConfidenceScore(BigDecimal confidenceScore) {
-        this.confidenceScore = confidenceScore;
+    public void setConfidence(String confidence) {
+        this.confidence = confidence;
     }
-
-    public LocalDateTime getAnalysisDate() {
-        return analysisDate;
-    }
+}
 
     public void setAnalysisDate(LocalDateTime analysisDate) {
         this.analysisDate = analysisDate;
