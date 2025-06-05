@@ -16,29 +16,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/re")
-    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
-        ResponeData responeData = new ResponeData();
-        boolean success = userService.createUser(userDTO);
-        if (success) {
-            responeData.setSuccess(Boolean.TRUE);
-            responeData.setData("User created successfully");
-        }else {
-            responeData.setSuccess(Boolean.FALSE);
-            responeData.setData("User creation failed");
-        }
-        return new ResponseEntity<>(responeData, HttpStatus.OK);
-    }
-    @GetMapping("/")
+
+    @GetMapping("/get")
     public ResponseEntity<?> getAllUsers() {
 
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id,@RequestBody UserDTO userDTO) {
+        boolean success = userService.updateUser(id, userDTO);
+        if (success) {
+            return ResponseEntity.ok("Successfully updated user");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update user");
+        }
+    }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        boolean success = userService.deleteUser(id);
+        if (success) {
+            return ResponseEntity.ok("Successfully deleted user");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete user");
+        }
+    }
 }
