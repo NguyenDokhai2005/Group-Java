@@ -68,4 +68,25 @@ public class PatientServiceImpl implements PatientService {
     public void deletePatient(Long id) {
         patientRepository.deleteById(id);
     }
+    @Override
+    public PatientDTO updatePatient(Long id, PatientDTO dto) {
+        Optional<Patient> optionalPatient = patientRepository.findById(id);
+
+        if (optionalPatient.isPresent()) {
+            Patient patient = optionalPatient.get();
+            patient.setName(dto.getName());
+            patient.setDateOfBirth(dto.getDateOfBirth());
+            patient.setGender(dto.getGender());
+            patient.setContactInfo(dto.getContactInfo());
+            patient.setCreatedBy(dto.getCreatedBy());
+            patient.setCreatedAt(dto.getCreatedAt());
+
+            Patient updated = patientRepository.save(patient);
+            return convertToDTO(updated);
+        } else {
+            return null; // Không tìm thấy => báo ở Controller
+        }
+    }
+
 }
+

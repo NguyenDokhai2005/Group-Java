@@ -19,7 +19,7 @@ public class Patient {
     private Date dateOfBirth;
 
     @Column(name = "gender")
-    private Gender gender;
+    private Gender gender ;
 
     @Column (name= "contact_info")
     private String contactInfo;
