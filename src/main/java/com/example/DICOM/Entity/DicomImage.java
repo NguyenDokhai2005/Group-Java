@@ -32,7 +32,6 @@ public class DicomImage {
 
     public DicomImage() {}
 
-    // --- Getter & Setter ---
 
     public Long getId() {
         return id;
