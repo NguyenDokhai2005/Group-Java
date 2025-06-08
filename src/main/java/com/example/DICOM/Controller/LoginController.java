@@ -1,9 +1,12 @@
 package com.example.DICOM.Controller;
 
 import com.example.DICOM.DTO.UserDTO;
+import com.example.DICOM.DTO.request.LoginRequest;
 import com.example.DICOM.Payloads.ResponeData;
+import com.example.DICOM.Repository.AuthenticationResponse;
 import com.example.DICOM.Service.LoginService;
 import com.example.DICOM.Service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,28 +28,27 @@ public class LoginController {
         this.userService = userService;
     }
 
-    @PostMapping("/singup")
-    public ResponseEntity<String> loigin(@RequestBody Map<String, String> credentials) {
-        String username = credentials.get("username");
-        String password = credentials.get("password");
+    @PostMapping("/signup")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        AuthenticationResponse response = loginService.loginUser(request.getUsername(), request.getPassword());
 
-        User user = loginService.loginUser(username, password);
-        if (user != null) {
-            return ResponseEntity.ok("Đăng nhập thành công! Chào " + user.getUsername());
+        if (response != null) {
+//            System.out.println(response);
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai tài khoản hoặc mật khẩu");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Tài khoản hoặc mật khẩu không đúng");
         }
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserDTO userDTO) {
-
-
         ResponeData responeData = new ResponeData();
         boolean success = userService.createUser(userDTO);
         if (success) {
             responeData.setSuccess(Boolean.TRUE);
             responeData.setData("User created successfully");
+            return ResponseEntity.ok(responeData);
+
         }else {
             responeData.setSuccess(Boolean.FALSE);
             responeData.setData("User đã tồn tại");

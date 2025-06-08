@@ -1,9 +1,13 @@
 package com.example.DICOM.Service;
 
 import com.example.DICOM.DTO.UserDTO;
+import com.example.DICOM.Mapper.UserMapper;
 import com.example.DICOM.Entity.User;
+import com.example.DICOM.Payloads.ResponeData;
 import com.example.DICOM.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,11 +25,15 @@ public class UserService {
             System.out.println("Username đã tồn tại" + userDTO.getUsername());
             return false;
         } else {
-            User user = new User();
-            user.setUsername(userDTO.getUsername());
-            user.setPassword(userDTO.getPassword());
-            user.setRole(userDTO.getRole());
-            user.setCreatedAt(userDTO.getCreated_date());
+//            User user = new User();
+//            user.setUsername(userDTO.getUsername());
+//            user.setPassword(userDTO.getPassword());
+//            user.setRole(userDTO.getRole());
+//            user.setCreatedAt(userDTO.getCreated_date());
+            User user = UserMapper.toEntity(userDTO);
+
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(5);
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
             try {
                 System.out.println("Inserting User");

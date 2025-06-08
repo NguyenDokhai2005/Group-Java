@@ -1,10 +1,14 @@
 package com.example.DICOM.DTO;
 
+import jakarta.validation.constraints.Size;
+
 import java.util.Date;
 
 public class UserDTO {
 
     private Long userId;
+
+    @Size(min=8, max=20, message = "tạo mật khẩu tối thiểu 8 ký tự tối đa 20 ký tự")
     private String username;
     private String password;
     private String role;
