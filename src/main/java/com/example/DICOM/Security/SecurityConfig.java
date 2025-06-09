@@ -23,7 +23,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "/login/register",
                                 "/login",
-                                "/login/**"
+                                "/login/**",
+                                "users/**"
 
                         ).permitAll() // Cho phép truy cập không cần đăng nhập
                         .anyRequest().authenticated()

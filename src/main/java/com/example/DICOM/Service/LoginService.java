@@ -1,12 +1,16 @@
 package com.example.DICOM.Service;
 
 import com.example.DICOM.DTO.UserDTO;
+import com.example.DICOM.DTO.request.IntrospectRequest;
 import com.example.DICOM.Entity.User;
 import com.example.DICOM.Repository.AuthenticationResponse;
+import com.example.DICOM.Repository.IntrospectResponce;
 import com.example.DICOM.Repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -63,6 +68,7 @@ public class LoginService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()
                 ))
+                .claim("role", "admin")
 
                 .build();
 
@@ -92,6 +98,20 @@ public class LoginService {
         } else
             return null;
         }
+    public static IntrospectResponce introspectResponce(IntrospectRequest request) throws JOSEException, ParseException{
+        var token = request.getToken();
 
+        JWSVerifier verifier = new MACVerifier(SINGER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expityTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        return  IntrospectResponce.builder()
+                .valid(verified && expityTime.after(new Date()))
+                .build();
+    }
 
 }
