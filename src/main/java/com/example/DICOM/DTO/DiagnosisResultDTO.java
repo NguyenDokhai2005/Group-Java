@@ -4,28 +4,34 @@ import java.time.LocalDateTime;
 
 public class DiagnosisResultDTO {
 
-    private Long image_id;
-    private Long analyzed_by_user_id;
+    private Long id;
+    private Long patientId;
+    private Long imageId;
     private String diagnosis;
-    private Double confidence_score;
-    private LocalDateTime analysis_date;
+    private LocalDateTime timestamp;
 
-    public DiagnosisResultDTO() {}
-
-    public Long getImage_id() {
-        return image_id;
+    public Long getId() {
+        return id;
     }
 
-    public void setImage_id(Long image_id) {
-        this.image_id = image_id;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getAnalyzed_by_user_id() {
-        return analyzed_by_user_id;
+    public Long getPatientId() {
+        return patientId;
     }
 
-    public void setAnalyzed_by_user_id(Long analyzed_by_user_id) {
-        this.analyzed_by_user_id = analyzed_by_user_id;
+    public void setPatientId(Long patientId) {
+        this.patientId = patientId;
+    }
+
+    public Long getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
     }
 
     public String getDiagnosis() {
@@ -36,18 +42,14 @@ public class DiagnosisResultDTO {
         this.diagnosis = diagnosis;
     }
 
-    public Double getConfidence_score() {
-        return confidence_score;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setConfidence_score(Double confidence_score) {
-        this.confidence_score = confidence_score;
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
-
-    public LocalDateTime getAnalysis_date() {
-        return analysis_date;
-    }
-
+}
     public void setAnalysis_date(LocalDateTime analysis_date) {
         this.analysis_date = analysis_date;
     }
