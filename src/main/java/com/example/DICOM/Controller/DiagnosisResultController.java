@@ -1,31 +1,52 @@
 package com.example.DICOM.Controller;
 
 import com.example.DICOM.DTO.DiagnosisResultDTO;
+import com.example.DICOM.Mapper.DiagnosisResultMapper;
 import com.example.DICOM.Service.DiagnosisResultService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/diagnosis")
+@RequestMapping("/diagnosis-results")
 public class DiagnosisResultController {
 
-    @Autowired
-    private DiagnosisResultService diagnosisResultService;
+    private final DiagnosisResultService service;
+    private final DiagnosisResultMapper mapper;
 
-    @PostMapping
-    public boolean createDiagnosisResult(@RequestBody DiagnosisResultDTO dto) {
-        return diagnosisResultService.createDiagnosisResult(dto);
+    public DiagnosisResultController(DiagnosisResultService service, DiagnosisResultMapper mapper) {
+        this.service = service;
+        this.mapper = mapper;
     }
 
-    @GetMapping("/user/{userId}")
-    public List<DiagnosisResultDTO> getByUser(@PathVariable Long userId) {
-        return diagnosisResultService.getByUser(userId);
+    @GetMapping
+    public List<DiagnosisResultDTO> getAll() {
+        return service.getAll()
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/image/{imageId}")
-    public List<DiagnosisResultDTO> getByImage(@PathVariable Long imageId) {
-        return diagnosisResultService.getByImage(imageId);
+    public List<DiagnosisResultDTO> getByImageId(@PathVariable Long imageId) {
+        return service.getByImageId(imageId)
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/patient/{patientId}")
+    public List<DiagnosisResultDTO> getByPatientId(@PathVariable Long patientId) {
+        return service.getByPatientId(patientId)
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @PostMapping
+    public DiagnosisResultDTO create(@RequestBody DiagnosisResultDTO dto) {
+        var saved = service.save(mapper.toEntity(dto));
+        return mapper.toDTO(saved);
     }
 }
