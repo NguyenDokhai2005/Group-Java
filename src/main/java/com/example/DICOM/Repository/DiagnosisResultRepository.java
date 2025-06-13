@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface DiagnosisResultRepository extends JpaRepository<DiagnosisResult, Long> {
-    List<DiagnosisResult> findByAnalyzedBy_UserId(Long userId);
-    List<DiagnosisResult> findByImage_Id(Long imageId);
+    List<DiagnosisResult> findByImageId(Long imageId);
+    List<DiagnosisResult> findByPatientId(Long patientId);
 }
