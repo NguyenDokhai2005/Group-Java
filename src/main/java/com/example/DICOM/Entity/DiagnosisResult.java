@@ -4,25 +4,17 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "diagnosis_result")
 public class DiagnosisResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "img_id")
-    private DicomImage image;
-
-    @ManyToOne
-    @JoinColumn(name = "analyzed_by")
-    private User analyzedBy;
-
+    private Long patientId;
+    private Long imageId;
     private String diagnosis;
-    private Double confidenceScore;
-    private LocalDateTime analysisDate;
-
-    public DiagnosisResult() {}
+    private LocalDateTime timestamp;
 
     public Long getId() {
         return id;
@@ -32,20 +24,20 @@ public class DiagnosisResult {
         this.id = id;
     }
 
-    public DicomImage getImage() {
-        return image;
+    public Long getPatientId() {
+        return patientId;
     }
 
-    public void setImage(DicomImage image) {
-        this.image = image;
+    public void setPatientId(Long patientId) {
+        this.patientId = patientId;
     }
 
-    public User getAnalyzedBy() {
-        return analyzedBy;
+    public Long getImageId() {
+        return imageId;
     }
 
-    public void setAnalyzedBy(User analyzedBy) {
-        this.analyzedBy = analyzedBy;
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
     }
 
     public String getDiagnosis() {
@@ -56,19 +48,11 @@ public class DiagnosisResult {
         this.diagnosis = diagnosis;
     }
 
-    public Double getConfidenceScore() {
-        return confidenceScore;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setConfidenceScore(Double confidenceScore) {
-        this.confidenceScore = confidenceScore;
-    }
-
-    public LocalDateTime getAnalysisDate() {
-        return analysisDate;
-    }
-
-    public void setAnalysisDate(LocalDateTime analysisDate) {
-        this.analysisDate = analysisDate;
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 }
