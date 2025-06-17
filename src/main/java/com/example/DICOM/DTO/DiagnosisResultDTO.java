@@ -50,7 +50,3 @@ public class DiagnosisResultDTO {
         this.timestamp = timestamp;
     }
 }
-    public void setAnalysis_date(LocalDateTime analysis_date) {
-        this.analysis_date = analysis_date;
-    }
-}
