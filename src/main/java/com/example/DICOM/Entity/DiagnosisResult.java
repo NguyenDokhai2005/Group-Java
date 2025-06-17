@@ -56,3 +56,4 @@ public class DiagnosisResult {
         this.timestamp = timestamp;
     }
 }
+
