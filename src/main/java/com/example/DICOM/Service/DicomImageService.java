@@ -1,60 +1,62 @@
 package com.example.DICOM.Service;
 
-import com.example.DICOM.DTO.DicomImageDTO;
 import com.example.DICOM.Entity.DicomImage;
+import com.example.DICOM.Entity.Patient;
+import com.example.DICOM.Entity.User;
 import com.example.DICOM.Repository.DicomImageRepository;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.DICOM.Repository.PatientRepository;
+import com.example.DICOM.Repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class DicomImageService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DicomImageService.class);
+    @Autowired
+    private DicomImageRepository dicomImageRepository;
 
-    private final DicomImageRepository dicomImageRepository;
+    @Autowired
+    private PatientRepository patientRepository;
 
-    public DicomImageService(DicomImageRepository dicomImageRepository) {
-        this.dicomImageRepository = dicomImageRepository;
-    }
+    @Autowired
+    private UserRepository userRepository;
 
-    public boolean saveDicomImage(DicomImageDTO dto) {
-        try {
-            DicomImage image = new DicomImage();
-            image.setPatientId(dto.getPatient_id());
-            image.setUploadedBy(dto.getUploaded_by());
-            image.setModality(dto.getModality());
-            image.setImageDate(dto.getImage_date());
-            image.setFilePath(dto.getFile_path());
-            image.setCreatedAt(dto.getCreated_at());
+    public DicomImage createDicomImage(DicomImage dicomImage) {
 
-            dicomImageRepository.save(image);
-            return true;
-        } catch (Exception e) {
-            logger.error("Failed to save DICOM image", e);
-            return false;
-        }
-    }
-
-    public List<DicomImageDTO> getAllImages() {
-        List<DicomImageDTO> dtoList = new ArrayList<>();
-        List<DicomImage> imageList = dicomImageRepository.findAll();
-
-        for (DicomImage img : imageList) {
-            DicomImageDTO dto = new DicomImageDTO();
-            dto.setPatient_id(img.getPatientId());
-            dto.setUploaded_by(img.getUploadedBy());
-            dto.setModality(img.getModality());
-            dto.setImage_date(img.getImageDate());
-            dto.setFile_path(img.getFilePath());
-            dto.setCreated_at(img.getCreatedAt());
-            dtoList.add(dto);
+        // 1. Kiểm tra Patient có tồn tại
+        if (dicomImage.getPatient() != null) {
+            Optional<Patient> patientOpt = patientRepository.findById(dicomImage.getPatient().getPatientId());
+            if (patientOpt.isPresent()) {
+                dicomImage.setPatient(patientOpt.get());
+            } else {
+                throw new IllegalArgumentException("Patient không tồn tại.");
+            }
+        } else {
+            throw new IllegalArgumentException("Thiếu thông tin patient_id.");
         }
 
-        return dtoList;
+        // 2. Kiểm tra User upload có tồn tại
+        if (dicomImage.getUploadedBy() != null && dicomImage.getUploadedBy().getUserId() != null) {
+            Optional<User> userOpt = userRepository.findById(dicomImage.getUploadedBy().getUserId());
+            if (userOpt.isPresent()) {
+                dicomImage.setUploadedBy(userOpt.get());
+            } else {
+                throw new IllegalArgumentException("User không tồn tại.");
+            }
+        } else {
+            throw new IllegalArgumentException("Thiếu thông tin user_id.");
+        }
+
+        // 3. Thiết lập ngày tạo
+        dicomImage.setCreatedAt(new Date());
+
+        // 4. Lưu ảnh DICOM
+        DicomImage savedImage = dicomImageRepository.save(dicomImage);
+
+
+        return savedImage;
     }
 }

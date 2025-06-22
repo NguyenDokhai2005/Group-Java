@@ -1,9 +1,14 @@
 package com.example.DICOM.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "dicom_images")
 public class DicomImage {
 
@@ -12,80 +17,33 @@ public class DicomImage {
     @Column(name = "img_id")
     private Long id;
 
-    @Column(name = "patient_id")
-    private Long patientId;
-
-    @Column(name = "uploaded_by")
-    private Long uploadedBy;
-
     @Column(name = "modality")
     private String modality;
 
     @Column(name = "image_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date imageDate;
 
     @Column(name = "file_path")
     private String filePath;
 
     @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    public DicomImage() {}
+    // Quan hệ với bệnh nhân
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
+    private Patient patient;
+
+    // Người dùng upload
+    @ManyToOne
+    @JoinColumn(name = "uploaded_by")
+    private User uploadedBy;
+
+    // Người dùng liên quan khác (nếu cần)
+    @Column(name = "user_id")
+    private Long userId;
 
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(Long patientId) {
-        this.patientId = patientId;
-    }
-
-    public Long getUploadedBy() {
-        return uploadedBy;
-    }
-
-    public void setUploadedBy(Long uploadedBy) {
-        this.uploadedBy = uploadedBy;
-    }
-
-    public String getModality() {
-        return modality;
-    }
-
-    public void setModality(String modality) {
-        this.modality = modality;
-    }
-
-    public Date getImageDate() {
-        return imageDate;
-    }
-
-    public void setImageDate(Date imageDate) {
-        this.imageDate = imageDate;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
 }

@@ -24,9 +24,14 @@ public class SecurityConfig {
                       
                         .requestMatchers(HttpMethod.GET, "/diagnosis-results/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/diagnosis-results").permitAll()
-
+                        .requestMatchers("/images/**").permitAll()
                 
-                        .requestMatchers("/login/**", "/users/**", "/images/**", "/patients/**").permitAll()
+                        .requestMatchers("/login/**",
+                                "/users/**",
+                                "/images/**",
+                                "/patients/**"
+
+                        ).permitAll()
 
                       
                         .anyRequest().authenticated()

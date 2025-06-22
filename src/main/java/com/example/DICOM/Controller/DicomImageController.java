@@ -1,29 +1,20 @@
 package com.example.DICOM.Controller;
 
-import com.example.DICOM.DTO.DicomImageDTO;
+import com.example.DICOM.Entity.DicomImage;
 import com.example.DICOM.Service.DicomImageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/images")
+@RequestMapping("/images")
+@CrossOrigin("*")
 public class DicomImageController {
 
-    private final DicomImageService dicomImageService;
+    @Autowired
+    private DicomImageService dicomImageService;
 
-    public DicomImageController(DicomImageService dicomImageService) {
-        this.dicomImageService = dicomImageService;
-    }
-
-    @PostMapping
-    public boolean uploadImage(@RequestBody DicomImageDTO dto) {
-        return dicomImageService.saveDicomImage(dto);
-    }
-
-    @GetMapping
-    public List<DicomImageDTO> getAllImages() {
-        return dicomImageService.getAllImages();
+    @PostMapping("/create")
+    public DicomImage uploadDicomImage(@RequestBody DicomImage dicomImage) {
+        return dicomImageService.createDicomImage(dicomImage);
     }
 }
-

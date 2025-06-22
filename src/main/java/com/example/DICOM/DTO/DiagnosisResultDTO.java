@@ -3,7 +3,6 @@ package com.example.DICOM.DTO;
 import java.time.LocalDateTime;
 
 public class DiagnosisResultDTO {
-
     private Long id;
     private Long patientId;
     private Long imageId;
@@ -48,9 +47,5 @@ public class DiagnosisResultDTO {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
-    }
-}
-    public void setAnalysis_date(LocalDateTime analysis_date) {
-        this.analysis_date = analysis_date;
     }
 }

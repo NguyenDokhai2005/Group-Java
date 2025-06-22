@@ -20,7 +20,7 @@ public class DiagnosisResultController {
         this.mapper = mapper;
     }
 
-    @GetMapping
+    @GetMapping("/getAll")
     public List<DiagnosisResultDTO> getAll() {
         return service.getAll()
                 .stream()

@@ -71,11 +71,15 @@ public class PatientService {
             patient.setDateOfBirth(patientDTO.getDateOfBirth());  // Gán ngày sinh
             patient.setGender(patientDTO.getGender()); // Gán giới tính
             patient.setContactInfo(patientDTO.getContactInfo()); // Gán số điện thoại
-            patient.setCreatedBy(1); // Mặc định Admin, giả sử ID của Admin là 1
+            patient.setCreatedBy(12); // Mặc định Admin, giả sử ID của Admin là 1
             patient.setCreatedAt(new Date());// Gán thời gian tạo là hiện tại
-
             patientDTO.setPatientId(patient.getPatientId()); // Gán patientId sau khi lưu
             patientDTO.setCreatedAt(patient.getCreatedAt());
+
+            System.out.println("Saving patient: " + patientDTO.getName());
+            Patient saved = patientRepository.save(patient);
+            System.out.println("Saved patient ID: " + saved.getPatientId());
+
             return patientDTO;
         } catch (Exception e) {
             throw new RuntimeException("Tạo bệnh nhân thất bại: " + e.getMessage(), e);
@@ -107,7 +111,7 @@ public class PatientService {
     // Lấy danh sách tất cả bệnh nhân
     public List<PatientDTO> getAllPatients() {
         try {
-            List<Patient> patients = entityManager.createQuery("SELECT p FROM patients p", Patient.class).getResultList(); // Truy vấn tất cả Patient từ cơ sở dữ liệu
+            List<Patient> patients = entityManager.createQuery("SELECT p FROM patient p", Patient.class).getResultList(); // Truy vấn tất cả Patient từ cơ sở dữ liệu
             if (patients.isEmpty()) {// Kiểm tra danh sách rỗng hoặc null
                 throw new RuntimeException("Không tìm thấy bệnh nhân nào trong cơ sở dữ liệu");
             }
@@ -173,7 +177,9 @@ public class PatientService {
             patient.setCreatedBy(1L); // Mặc định Admin, giả sử ID của Admin là 1
             patient.setCreatedAt(patient.getCreatedAt());
 
-            entityManager.merge(patient);
+            System.out.println("creating...");
+            Patient saved = patientRepository.save(patient);
+            System.out.println("saved...");
             return patientDTO;
         } catch (Exception e) {
             throw new RuntimeException("Cập nhật bệnh nhân với ID " + patientId + " thất bại: " + e.getMessage(), e);

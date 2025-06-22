@@ -6,7 +6,7 @@ import java.util.Date;
 
 import com.example.DICOM.Enums.Gender;
 
-@Entity(name = "patient")
+@Entity(name = "patients")
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,14 +18,15 @@ public class Patient {
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
-    private Gender gender ;
+    private Gender gender;
 
     @Column (name= "contact_info")
     private String contactInfo;
 
     @Column (name = "created_by")
-    private long createdBy;
+    private Long createdBy;
 
     @Column (name = "created_at")
     private Date createdAt;

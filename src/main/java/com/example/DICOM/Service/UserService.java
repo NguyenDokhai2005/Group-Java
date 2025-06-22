@@ -1,6 +1,7 @@
 package com.example.DICOM.Service;
 
 import com.example.DICOM.DTO.UserDTO;
+import com.example.DICOM.Enums.Role;
 import com.example.DICOM.Mapper.UserMapper;
 import com.example.DICOM.Entity.User;
 import com.example.DICOM.Payloads.ResponeData;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,8 @@ public class UserService {
 
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(5);
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            HashSet<String> roles = new HashSet<>();
+            roles.add(Role.USER.name());
 
             try {
                 System.out.println("Inserting User");
@@ -78,6 +82,8 @@ public class UserService {
 
         return userDTOS;
     }
+
+
 
 
 
