@@ -1,13 +1,16 @@
 package com.example.DICOM.Entity;
 
 import jakarta.persistence.*;
-
+import com.example.DICOM.Entity.User;
 import java.util.Date;
-
 import com.example.DICOM.Enums.Gender;
+import lombok.Getter;
 
-@Entity(name = "patient")
+@Entity(name = "patients")
 public class Patient {
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User userId;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long patientId;
@@ -18,57 +21,25 @@ public class Patient {
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
-    private Gender gender ;
+    private Gender gender;
 
     @Column (name= "contact_info")
     private String contactInfo;
 
-    @Column (name = "created_by")
-    private long createdBy;
-
-    @Column (name = "created_at")
+    @Column (name= "createdAt")
     private Date createdAt;
 
+    @Column (name ="createdBy")
+    private Long createdBy;
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public long getPatientId() {
+        return patientId;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(long createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public String getContactInfo() {
-        return contactInfo;
-    }
-
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setPatientId(long patientId) {
+        this.patientId = patientId;
     }
 
     public String getName() {
@@ -79,12 +50,52 @@ public class Patient {
         this.name = name;
     }
 
-    public long getPatientId() {
-        return patientId;
+    public Date getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setPatientId(long patientId) {
-        this.patientId = patientId;
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public String getContactInfo() {
+        return contactInfo;
+    }
+
+    public void setContactInfo(String contactInfo) {
+        this.contactInfo = contactInfo;
+    }
+
+    public User getUserId() {
+        return userId;
+    }
+
+    public void setUserId(User userId) {
+        this.userId = userId;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createAt) {
+        this.createdAt = createAt;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
 }
+
