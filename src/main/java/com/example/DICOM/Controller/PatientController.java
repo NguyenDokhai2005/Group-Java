@@ -5,6 +5,7 @@ import com.example.DICOM.Service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class PatientController {
     private PatientService patientService;
 
     // [POST] Tạo mới bệnh nhân
+    @PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('RECEPTIONIST')" )
     @PostMapping("/createPatient")
     public ResponseEntity<?> createPatient(
             @RequestBody PatientDTO patientDTO,
@@ -32,6 +34,7 @@ public class PatientController {
     }
 
     // Lấy danh sách tất cả bệnh nhân
+    @PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('RECEPTIONIST') or hasAuthority('ADMIN') ")
     @GetMapping("/get/getall") // Xử lý yêu cầu GET đến /api/patients
     public ResponseEntity<?> getAllPatients() {
         try {
@@ -43,6 +46,7 @@ public class PatientController {
     }
 
     // Lấy thông tin bệnh nhân theo ID
+    @PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('RECEPTIONIST') or hasAuthority('ADMIN') ")
     @GetMapping("/get/{id}") // Xử lý yêu cầu GET đến /api/patients/{id}
     public ResponseEntity<?> getPatientById(@PathVariable Long id) { // Lấy id từ URL
         try {
@@ -54,6 +58,7 @@ public class PatientController {
     }
 
     // Cập nhật thông tin bệnh nhân
+    @PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('RECEPTIONIST') or hasAuthority('ADMIN') ")
     @PutMapping("/put/{id}") // Xử lý yêu cầu PUT đến /api/patients/{id}
     public ResponseEntity<?> updatePatient(@PathVariable Long id, @RequestBody PatientDTO patientDTO) { // Lấy id và dữ liệu từ body
         try {
@@ -65,6 +70,7 @@ public class PatientController {
     }
 
     // Xóa bệnh nhân theo ID
+    @PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('RECEPTIONIST') or hasAuthority('ADMIN') ")
     @DeleteMapping("/delete/{id}") // Xử lý yêu cầu DELETE đến /api/patients/{id}
     public ResponseEntity<?> deletePatient(@PathVariable Long id) { // Lấy id từ URL
         try {

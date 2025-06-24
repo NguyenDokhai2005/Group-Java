@@ -9,6 +9,7 @@ import com.example.DICOM.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,13 +22,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllUsers() {
 
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id,@RequestBody UserDTO userDTO) {
         boolean success = userService.updateUser(id, userDTO);
@@ -38,6 +40,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         boolean success = userService.deleteUser(id);

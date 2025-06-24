@@ -1,10 +1,8 @@
 package com.example.DICOM.Service;
 
 import com.example.DICOM.DTO.UserDTO;
-import com.example.DICOM.Enums.Role;
 import com.example.DICOM.Mapper.UserMapper;
 import com.example.DICOM.Entity.User;
-import com.example.DICOM.Payloads.ResponeData;
 import com.example.DICOM.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
