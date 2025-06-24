@@ -1,5 +1,6 @@
 package com.example.DICOM.Security;
 
+import com.example.DICOM.Controller.LogoutController; // ✅ THÊM: để gọi kiểm tra blacklist
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
@@ -36,8 +37,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SignedJWT signedJWT = SignedJWT.parse(token);
                 JWSVerifier verifier = new MACVerifier(SINGER_KEY.getBytes());
 
-                if (signedJWT.verify(verifier)
-                        && signedJWT.getJWTClaimsSet().getExpirationTime().after(new Date())) {
+                // từ chối token nếu đã bị logout
+                if (!LogoutController.isBlacklisted(token) &&
+                        signedJWT.verify(verifier) &&
+                        signedJWT.getJWTClaimsSet().getExpirationTime().after(new Date())) {
 
                     String username = signedJWT.getJWTClaimsSet().getSubject();
                     String role = (String) signedJWT.getJWTClaimsSet().getClaim("role");
@@ -49,6 +52,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
+
             } catch (ParseException | com.nimbusds.jose.JOSEException e) {
                 e.printStackTrace();
             }
