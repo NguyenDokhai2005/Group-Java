@@ -7,9 +7,12 @@ import com.example.DICOM.Repository.DicomImageRepository;
 import com.example.DICOM.Repository.PatientRepository;
 import com.example.DICOM.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,5 +61,48 @@ public class DicomImageService {
 
 
         return savedImage;
+    }
+
+    public List<DicomImage> getAllImages() {
+        List<DicomImage> images = dicomImageRepository.findAll();
+        if (images.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Không có ảnh nào trong hệ thống.");
+        }
+        return images;
+    }
+
+
+    public List<DicomImage> getImagesByPatientId(Long patientId) {
+        if (!patientRepository.existsById(patientId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bệnh nhân với ID: " + patientId);
+        }
+
+        List<DicomImage> images = dicomImageRepository.findAll().stream()
+                .filter(img -> img.getPatient() != null && img.getPatient().getPatientId() == patientId)
+                .toList();
+
+        if (images.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Bệnh nhân này chưa có ảnh nào.");
+        }
+
+        return images;
+    }
+
+    public void deleteImageById(Long imgId) {
+        if (!dicomImageRepository.existsById(imgId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy ảnh với ID: " + imgId);
+        }
+        dicomImageRepository.deleteById(imgId);
+    }
+
+    public DicomImage updateImage(Long imgId, DicomImage updateData) {
+        DicomImage existing = dicomImageRepository.findById(imgId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy ảnh với ID: " + imgId));
+
+        if (updateData.getModality() != null) existing.setModality(updateData.getModality());
+        if (updateData.getImageDate() != null) existing.setImageDate(updateData.getImageDate());
+        if (updateData.getFilePath() != null) existing.setFilePath(updateData.getFilePath());
+
+        return dicomImageRepository.save(existing);
     }
 }

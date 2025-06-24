@@ -29,7 +29,8 @@ public class SecurityConfig {
                         .requestMatchers("/login/**",
                                 "/users/**",
                                 "/images/**",
-                                "/patients/**"
+                                "/patients/**",
+                                "/annotations/**"
 
                         ).permitAll()
 

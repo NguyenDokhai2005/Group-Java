@@ -1,11 +1,10 @@
 package com.example.DICOM.Repository;
 
 import com.example.DICOM.Entity.Annotations;
+import com.example.DICOM.Entity.DicomImage;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-
-@Repository
 public interface AnnotationsRepository extends JpaRepository<Annotations, Long> {
+    List<Annotations> findByDicomImage(DicomImage dicomImage);
 }
