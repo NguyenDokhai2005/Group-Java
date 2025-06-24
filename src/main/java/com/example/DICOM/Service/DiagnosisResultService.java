@@ -31,3 +31,4 @@ public class DiagnosisResultService {
         return repository.findAll();
     }
 }
+

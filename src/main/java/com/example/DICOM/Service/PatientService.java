@@ -36,11 +36,9 @@ public class PatientService {
 
     // Tạo mới một bệnh nhân, sử dụng @Transactional để đảm bảo tính toàn vẹn dữ liệu
     @Transactional
-    public PatientDTO createPatient(PatientDTO patientDTO) {
+    public PatientDTO createPatient(PatientDTO patientDTO, Long userId) {
         try {
-//            if (patientDTO == null) {
-//                throw new IllegalArgumentException("Dữ liệu bệnh nhân không được để trống");
-//            }
+            // Kiểm tra validation
             if (patientDTO.getName() == null || patientDTO.getName().trim().isEmpty()) {
                 throw new IllegalArgumentException("Tên bệnh nhân không được để trống hoặc rỗng");
             }
@@ -65,22 +63,30 @@ public class PatientService {
             if (!isValidPhoneNumber(patientDTO.getContactInfo())) {
                 throw new IllegalArgumentException("Thông tin liên lạc phải là số điện thoại hợp lệ (có thể bắt đầu bằng mã quốc gia và theo sau là 9-11 chữ số)");
             }
+            // Tạo và lưu bệnh nhân
+            Patient patient = new Patient();
+            patient.setPatientId(patientDTO.getPatientId());
+            patient.setName(patientDTO.getName());
+            patient.setDateOfBirth(patientDTO.getDateOfBirth());
+            patient.setGender(patientDTO.getGender());
+            patient.setContactInfo(patientDTO.getContactInfo());
+            patient.setCreatedBy(userId);
+            patient.setCreatedAt(new Date());
 
-            Patient patient = new Patient(); // Tạo mới đối tượng Patient
-            patient.setName(patientDTO.getName()); // Gán tên từ DTO
-            patient.setDateOfBirth(patientDTO.getDateOfBirth());  // Gán ngày sinh
-            patient.setGender(patientDTO.getGender()); // Gán giới tính
-            patient.setContactInfo(patientDTO.getContactInfo()); // Gán số điện thoại
-            patient.setCreatedBy(12); // Mặc định Admin, giả sử ID của Admin là 1
-            patient.setCreatedAt(new Date());// Gán thời gian tạo là hiện tại
-            patientDTO.setPatientId(patient.getPatientId()); // Gán patientId sau khi lưu
-            patientDTO.setCreatedAt(patient.getCreatedAt());
+            // Lưu vào cơ sở dữ liệu
+            Patient saved = patientRepository.save(patient); // Sử dụng PatientRepository để lưu
 
-            System.out.println("Saving patient: " + patientDTO.getName());
-            Patient saved = patientRepository.save(patient);
-            System.out.println("Saved patient ID: " + saved.getPatientId());
+            // Tạo DTO trả về
+            PatientDTO result = new PatientDTO();
+            result.setPatientId(saved.getPatientId());
+            result.setName(saved.getName());
+            result.setDateOfBirth(saved.getDateOfBirth());
+            result.setGender(saved.getGender());
+            result.setContactInfo(saved.getContactInfo());
+            result.setCreatedAt(saved.getCreatedAt());
+            result.setCreatedBy(saved.getCreatedBy());
 
-            return patientDTO;
+            return result;
         } catch (Exception e) {
             throw new RuntimeException("Tạo bệnh nhân thất bại: " + e.getMessage(), e);
         }
@@ -111,7 +117,7 @@ public class PatientService {
     // Lấy danh sách tất cả bệnh nhân
     public List<PatientDTO> getAllPatients() {
         try {
-            List<Patient> patients = entityManager.createQuery("SELECT p FROM patient p", Patient.class).getResultList(); // Truy vấn tất cả Patient từ cơ sở dữ liệu
+            List<Patient> patients = entityManager.createQuery("SELECT p FROM patients p", Patient.class).getResultList(); // Truy vấn tất cả Patient từ cơ sở dữ liệu
             if (patients.isEmpty()) {// Kiểm tra danh sách rỗng hoặc null
                 throw new RuntimeException("Không tìm thấy bệnh nhân nào trong cơ sở dữ liệu");
             }
@@ -129,6 +135,7 @@ public class PatientService {
         } catch (Exception e) {
             throw new RuntimeException("Lấy danh sách tất cả bệnh nhân thất bại: " + e.getMessage(), e);
         }
+
     }
 
     // Cập nhật thông tin bệnh nhân
@@ -174,12 +181,10 @@ public class PatientService {
             patient.setDateOfBirth(patientDTO.getDateOfBirth());
             patient.setGender(patientDTO.getGender());
             patient.setContactInfo(patientDTO.getContactInfo());
-            patient.setCreatedBy(1L); // Mặc định Admin, giả sử ID của Admin là 1
+            patient.setCreatedBy(patientDTO.getCreatedBy());
             patient.setCreatedAt(patient.getCreatedAt());
 
-            System.out.println("creating...");
-            Patient saved = patientRepository.save(patient);
-            System.out.println("saved...");
+            entityManager.merge(patient);
             return patientDTO;
         } catch (Exception e) {
             throw new RuntimeException("Cập nhật bệnh nhân với ID " + patientId + " thất bại: " + e.getMessage(), e);

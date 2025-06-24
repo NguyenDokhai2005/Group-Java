@@ -3,6 +3,7 @@ package com.example.DICOM.DTO;
 import java.time.LocalDateTime;
 
 public class DiagnosisResultDTO {
+
     private Long id;
     private Long patientId;
     private Long imageId;

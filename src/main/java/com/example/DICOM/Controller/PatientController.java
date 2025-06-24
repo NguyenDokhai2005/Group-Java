@@ -2,6 +2,7 @@ package com.example.DICOM.Controller;
 
 import com.example.DICOM.DTO.PatientDTO;
 import com.example.DICOM.Service.PatientService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/patients")
+@RequiredArgsConstructor
 //@CrossOrigin(origins = "*") // Cho phép gọi API từ frontend khác domain
 public class PatientController {
 
@@ -18,9 +20,11 @@ public class PatientController {
 
     // [POST] Tạo mới bệnh nhân
     @PostMapping("/createPatient")
-    public ResponseEntity<?> createPatient(@RequestBody PatientDTO patientDTO) {
+    public ResponseEntity<?> createPatient(
+            @RequestBody PatientDTO patientDTO,
+            @RequestHeader("X-User-Id") Long userId){
         try {
-            PatientDTO createdPatient = patientService.createPatient(patientDTO);
+            PatientDTO createdPatient = patientService.createPatient(patientDTO,userId);
             return ResponseEntity.ok(createdPatient);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Tạo bệnh nhân thất bại: " + e.getMessage()); // Trả về 400 Bad Request với thông báo lỗi
