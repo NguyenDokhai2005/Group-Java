@@ -57,61 +57,68 @@ public class LoginService {
         this.userRepository = userRepository;
     }
 
-    private String generateToken(String username) {
-
+    private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwsClaimSet = new JWTClaimsSet.Builder()
-                .subject(username)
-                .issuer(username)
+                .subject(user.getUsername())
+                .issuer(user.getUsername())
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()
                 ))
-                .claim("role", "admin")
-
+                .claim("role", user.getRole())  // ✅ Thêm role vào token
                 .build();
 
         Payload payload = new Payload(jwsClaimSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
 
-        try{
+        try {
             jwsObject.sign(new MACSigner(SINGER_KEY.getBytes()));
             return jwsObject.serialize();
-        } catch (JOSEException e){
+        } catch (JOSEException e) {
             log.error("Cannot create token", e);
             throw new RuntimeException(e);
         }
-
     }
+
+
 
     public AuthenticationResponse loginUser(String username, String password) {
         User user = userRepository.findByUsername(username);
-
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         boolean passwordcheck = passwordEncoder.matches(password, user.getPassword());
-        if (user != null && passwordcheck ) {
-            var token = generateToken(username);
+
+        if (user != null && passwordcheck) {
+            var token = generateToken(user);  // ✅ Truyền user thay vì username
             return AuthenticationResponse.builder()
                     .token(token)
                     .build();
-        } else
+        } else {
             return null;
         }
-    public static IntrospectResponce introspectResponce(IntrospectRequest request) throws JOSEException, ParseException{
+    }
+
+    public static IntrospectResponce introspectResponce(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
 
         JWSVerifier verifier = new MACVerifier(SINGER_KEY.getBytes());
-
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         Date expityTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        boolean verified = signedJWT.verify(verifier);
 
-        var verified = signedJWT.verify(verifier);
+        // ✅ Lấy role từ token nếu hợp lệ
+        String role = null;
+        if (verified && expityTime.after(new Date())) {
+            role = (String) signedJWT.getJWTClaimsSet().getClaim("role");
+        }
 
-        return  IntrospectResponce.builder()
+        return IntrospectResponce.builder()
                 .valid(verified && expityTime.after(new Date()))
+                .role(role)  // ✅ Trả về role
                 .build();
     }
+
 
 }

@@ -50,7 +50,10 @@ public class LoginController {
     public ResponseEntity<?> login(@RequestBody IntrospectRequest request) throws JOSEException, ParseException {
         try {
             IntrospectResponce responce = LoginService.introspectResponce(request);
-            return ResponseEntity.ok(responce);
+            return ResponseEntity.ok(Map.of(
+                    "valid", responce.isValid(),
+                    "role", responce.getRole()
+            ));
         } catch (Exception e) {
             return ResponseEntity.ok(IntrospectResponce.builder().valid(false).build());
         }
