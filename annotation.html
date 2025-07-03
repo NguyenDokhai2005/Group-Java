@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thêm chú thích ảnh DICOM</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 30px; }
+    form { background: white; padding: 20px; border-radius: 8px; width: 400px; margin: auto; box-shadow: 0 0 10px #ccc; }
+    label { font-weight: bold; display: block; margin-top: 15px; }
+    input, textarea, button { width: 100%; padding: 10px; margin-top: 5px; }
+    textarea { resize: vertical; min-height: 60px; }
+  </style>
+</head>
+<body>
+
+  <form id="annotationForm">
+    <h2>Thêm chú thích ảnh DICOM</h2>
+
+    <label for="imgId">ID ảnh DICOM (img_id):</label>
+    <input type="number" id="imgId" required />
+
+    <label for="userId">ID người chú thích (user_id):</label>
+    <input type="number" id="userId" required />
+
+    <label for="annotationText">Nội dung chú thích:</label>
+    <textarea id="annotationText" required></textarea>
+
+    <label for="note">Ghi chú bổ sung (không bắt buộc):</label>
+    <textarea id="note"></textarea>
+
+    <button type="submit">Lưu chú thích</button>
+  </form>
+
+  <script>
+    document.getElementById("annotationForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const payload = {
+        dicomImage: { id: parseInt(document.getElementById("imgId").value) },
+        user: { userId: parseInt(document.getElementById("userId").value) },
+        annotationText: document.getElementById("annotationText").value,
+        note: document.getElementById("note").value
+      };
+
+      const res = await fetch("http://localhost:8080/annotations/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        alert("Lưu chú thích thành công!");
+        this.reset();
+      } else {
+        const text = await res.text();
+        alert("Lỗi khi lưu chú thích: " + text);
+      }
+    });
+  </script>
+
+</body>
+</html>

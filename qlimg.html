@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quản lý hình ảnh DICOM</title>
+  <style>
+    body { font-family: Arial; background: #f8f8f8; padding: 20px; }
+    h1 { color: #007bff; }
+    select { padding: 8px; margin: 10px 0; }
+    table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    img { max-width: 100px; max-height: 100px; object-fit: cover; }
+    button { padding: 5px 10px; background: red; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <h1>Danh sách hình ảnh DICOM</h1>
+
+  <!-- Lọc theo bệnh nhân -->
+  <label for="filterPatient">Lọc theo bệnh nhân:</label>
+  <select id="filterPatient" onchange="filterImagesByPatient()">
+    <option value="">-- Tất cả bệnh nhân --</option>
+  </select>
+
+  <!-- Bảng hiển thị hình ảnh -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>File</th>
+        <th>Ảnh</th>
+        <th>Modality</th>
+        <th>Ngày chụp</th>
+        <th>Người upload</th>
+        <th>Bệnh nhân</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="imageTable"></tbody>
+  </table>
+
+  <script>
+    let allImages = [];
+
+    // Gọi API để load danh sách ảnh
+    async function loadImages() {
+      try {
+        const res = await fetch("http://localhost:8080/images/getAll");
+        const data = await res.json();
+        allImages = data;
+        renderImages(data);
+        populatePatientFilter(data);
+      } catch (err) {
+        console.error("Lỗi tải ảnh:", err);
+        alert("Không thể tải danh sách ảnh.");
+      }
+    }
+
+    // Render bảng ảnh
+    function renderImages(data) {
+      const table = document.getElementById("imageTable");
+      table.innerHTML = data.map(img => `
+        <tr>
+          <td>${img.id}</td>
+          <td>${img.filePath}</td>
+          <td>
+            ${img.filePath.endsWith(".jpg") || img.filePath.endsWith(".png")
+              ? `<img src="${img.filePath}" />`
+              : `<a href="${img.filePath}" target="_blank">Tải xuống</a>`}
+          </td>
+          <td>${img.modality}</td>
+          <td>${img.imageDate}</td>
+          <td>${img.uploadedBy?.username || "Không rõ"}</td>
+          <td>${img.patient?.name || "Không rõ"}</td>
+          <td><button onclick="deleteImage(${img.id})">Xoá</button></td>
+        </tr>
+      `).join("");
+    }
+
+    // Xoá ảnh theo ID
+    async function deleteImage(id) {
+      if (!confirm("Bạn có chắc muốn xoá ảnh này?")) return;
+
+      try {
+        await fetch(`http://localhost:8080/images/delete/${id}`, {
+          method: "DELETE"
+        });
+        alert("Đã xoá ảnh.");
+        loadImages();
+      } catch (err) {
+        console.error("Lỗi xoá ảnh:", err);
+        alert("Không thể xoá ảnh.");
+      }
+    }
+
+    // Đổ danh sách bệnh nhân vào filter
+    function populatePatientFilter(images) {
+      const select = document.getElementById("filterPatient");
+      const uniquePatients = [...new Map(images
+        .filter(img => img.patient)
+        .map(img => [img.patient.patientId, img.patient.name])
+      ).entries()];
+
+      select.innerHTML = '<option value="">-- Tất cả bệnh nhân --</option>';
+      uniquePatients.forEach(([id, name]) => {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = `${id} - ${name}`;
+        select.appendChild(option);
+      });
+    }
+
+    // Lọc ảnh theo bệnh nhân
+    function filterImagesByPatient() {
+      const selectedId = document.getElementById("filterPatient").value;
+      if (!selectedId) {
+        renderImages(allImages);
+      } else {
+        const filtered = allImages.filter(img => img.patient?.patientId == selectedId);
+        renderImages(filtered);
+      }
+    }
+
+    // Load ảnh khi mở trang
+    loadImages();
+  </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thêm ảnh DICOM</title>
+  <style>
+    body { font-family: Arial; background: #f2f2f2; padding: 30px; }
+    form { background: white; padding: 20px; border-radius: 8px; width: 450px; margin: auto; box-shadow: 0 0 10px #ccc; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 10px; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <form id="dicomForm" enctype="multipart/form-data">
+    <h2>Thêm ảnh DICOM</h2>
+
+    <label for="patientId">Bệnh nhân:</label>
+    <select id="patientId" required>
+      <option value="">-- Chọn bệnh nhân --</option>
+    </select>
+
+    <label for="uploadedBy">Người upload (text):</label>
+    <input type="text" id="uploadedBy" required />
+
+    <label for="modality">Modality:</label>
+    <select id="modality" required>
+      <option value="MRI">MRI</option>
+      <option value="CT">CT</option>
+      <option value="X-RAY">X-RAY</option>
+    </select>
+
+    <label for="imageDate">Ngày chụp:</label>
+    <input type="date" id="imageDate" required />
+
+    <label for="file">Chọn ảnh DICOM:</label>
+    <input type="file" id="file" accept=".dcm,image/*" required />
+
+    <label for="userId">User ID:</label>
+    <input type="number" id="userId" required />
+
+    <button type="submit">Tải ảnh lên</button>
+  </form>
+
+  <script>
+    // Load danh sách bệnh nhân
+    async function loadPatients() {
+      const res = await fetch("http://localhost:8080/patients/get/getall");
+      const data = await res.json();
+      const select = document.getElementById("patientId");
+      data.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.patientId;
+        option.textContent = `${p.patientId} - ${p.name || 'Không tên'}`;
+        select.appendChild(option);
+      });
+    }
+
+    // Gửi ảnh đến backend
+    document.getElementById("dicomForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append("patientId", document.getElementById("patientId").value);
+      formData.append("uploadedBy", document.getElementById("uploadedBy").value);
+      formData.append("modality", document.getElementById("modality").value);
+      formData.append("imageDate", document.getElementById("imageDate").value);
+      formData.append("userId", document.getElementById("userId").value);
+
+      const file = document.getElementById("file").files[0];
+      if (!file) return alert("Chưa chọn file!");
+      formData.append("file", file);
+
+      const res = await fetch("http://localhost:8080/images/add", {
+        method: "POST",
+        body: formData
+      });
+
+      if (res.ok) {
+        alert("Tải ảnh thành công!");
+        this.reset();
+      } else {
+        alert("Tải ảnh thất bại!");
+      }
+    });
+
+    loadPatients();
+  </script>
+
+</body>
+</html>

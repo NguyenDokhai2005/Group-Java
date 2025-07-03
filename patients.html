@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quản lý bệnh nhân</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    h1 { color: #007bff; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    .btn { padding: 5px 10px; border: none; cursor: pointer; }
+    .btn-delete { background: red; color: white; }
+    .btn-add { background: green; color: white; }
+    input, select { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+    form { margin-top: 20px; background: #fff; padding: 20px; border-radius: 5px; }
+    #searchInput { width: 300px; padding: 8px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Quản lý bệnh nhân</h1>
+
+  <input type="text" id="searchInput" placeholder="Tìm theo tên..." oninput="filterPatients()" />
+
+  <table id="patientTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Họ tên</th>
+        <th>Giới tính</th>
+        <th>Ngày sinh</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <form id="patientForm">
+  <h2>Thêm bệnh nhân mới</h2>
+  <input type="text" id="name" placeholder="Họ tên" required />
+  <select id="gender">
+    <option value="MALE">Nam</option>
+    <option value="FEMALE">Nữ</option>
+  </select>
+  <input type="date" id="dob" placeholder="Ngày sinh" required />
+  <input type="text" id="contact" placeholder="Số điện thoại" required />
+  <input type="number" id="createdBy" placeholder="ID người tạo" required />
+  <input type="number" id="userId" placeholder="User ID liên kết" required />
+  <button class="btn btn-add" type="submit">Thêm bệnh nhân</button>
+</form>
+
+
+  <script>
+    let allPatients = [];
+
+    async function loadPatients() {
+      try {
+        const res = await fetch("http://localhost:8080/patients/get/getall");
+        const data = await res.json();
+        allPatients = data;
+        renderTable(data);
+      } catch (err) {
+        console.error("Không thể tải danh sách bệnh nhân:", err);
+      }
+    }
+
+    function renderTable(data) {
+      const table = document.querySelector("#patientTable tbody");
+      table.innerHTML = data.map(p => `
+        <tr>
+          <td>${p.patientId}</td>
+          <td>${p.fullName || p.name || 'N/A'}</td>
+          <td>${p.gender}</td>
+          <td>${p.dateOfBirth}</td>
+          <td><button class="btn btn-delete" onclick="deletePatient(${p.patientId})">Xóa</button></td>
+        </tr>
+      `).join("");
+    }
+
+    async function deletePatient(id) {
+      if (confirm("Bạn có chắc muốn xóa bệnh nhân này?")) {
+        await fetch(`http://localhost:8080/patients/delete/${id}`, {
+          method: "DELETE"
+        });
+        loadPatients();
+      }
+    }
+
+    document.getElementById("patientForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const name = document.getElementById("name").value;
+        const gender = document.getElementById("gender").value;
+        const dateOfBirth = document.getElementById("dob").value;
+        const contact_info = document.getElementById("contact").value;
+        const created_by = document.getElementById("createdBy").value;
+        const patient = {
+            name,
+            gender,
+            date_of_birth: dateOfBirth,
+            contact_info,
+            created_by
+        };
+
+        await fetch("http://localhost:8080/patients/createPatient", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(patient)
+        });
+
+        this.reset();
+        loadPatients();
+        });
+
+
+    function filterPatients() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = allPatients.filter(p =>
+        (p.fullName || p.name || '').toLowerCase().includes(keyword)
+      );
+      renderTable(filtered);
+    }
+
+    loadPatients();
+  </script>
+</body>
+</html>
