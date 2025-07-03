@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng nhập hệ thống</title>
+  <style>
+    body { font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f0f0; }
+    form { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+    input, button { margin: 10px 0; padding: 10px; width: 100%; }
+  </style>
+</head>
+<body>
+  <form id="loginForm">
+    <h2>Đăng nhập</h2>
+    <input type="text" id="username" placeholder="Tên đăng nhập" required />
+    <input type="password" id="password" placeholder="Mật khẩu" required />
+    <button type="submit">Đăng nhập</button>
+  </form>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch("http://localhost:8080/login/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+       if (res.ok) {
+        const data = await res.json();
+        const token = data.token;
+
+        console.log("✅ Mã token nhận được:", token); // ✅ In token tại đây
+
+        localStorage.setItem("token", token);
+        window.location.href = "admin.html";
+        } else {
+        alert("Sai thông tin đăng nhập");
+        }
+        });
+  </script>
+</body>
+</html>
